@@ -27,12 +27,13 @@ const server = http.createServer((req, res) => {
                     
                     return;
                 }
+
+                res.statusCode = 200;
+                res.setHeader('Content-Type', 'text/html');
+    
+                fs.createReadStream(filePath).pipe(res);
             });
 
-            res.statusCode = 200;
-            res.setHeader('Content-Type', 'text/html');
-
-            fs.createReadStream(filePath).pipe(res);
         }  else {
             res.statusCode = 415;
             res.setHeader('Content-Type', 'text/html');
