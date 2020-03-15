@@ -1,6 +1,8 @@
 const MongoClient = require('mongodb').MongoClient;
 const assert = require('assert').strict;
 
+const dboper = require('./operations');
+
 const url = "mongodb://localhost:27017/";
 const dbname = "nucampsite";
 const collectionName = 'campsites';
@@ -23,17 +25,25 @@ MongoClient.connect(url, {
     
         const collection = db.collection(collectionName);
 
-        collection.insertOne({name: "Breadcrumb Trail Campground", description: "Test"}, (err, result) => {
-            assert.strictEqual(err, null);
-
+        dboper.insertDocument(db, {name: "Breadcrumb Trail Campground", description: "Test"}, collectionName, result => {
             console.log('Insert Document: ', result.ops);
 
-            collection.find().toArray((err, docs) => {
-                assert.strictEqual(err, null);
-
+            dboper.findDocuments(db, collectionName, docs => {
                 console.log('Found documents: ', docs);
 
-                client.close();
+                dboper.updateDocument(db, { name: "Breadcrumb Trail Campground"}, {description: "Updated test description"}, collectionName, result => {
+                    console.log('Updated document count: ', result.result.nModified);
+
+                    dboper.findDocuments(db, collectionName, docs => {
+                        console.log('Found documents: ', docs);
+
+                        dboper.removeDocument(db, { name: "Breadcrumb Trail Campground" }, collectionName, result => {
+                            console.log('Deleted document count: ', result.deletedCount);
+
+                            client.close();
+                        });
+                    });
+                });
             });
         });
     });
