@@ -1,16 +1,34 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const path = require('path');
+const createError = require('http-errors');
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+const express = require('express');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
+const mongoose = require('mongoose');
+
+const indexRouter = require('./routes/index');
+const usersRouter = require('./routes/users');
+
 const campsiteRouter = require('./routes/campsiteRouter');
 const partnerRouter = require('./routes/partnerRouter');
 const promotionRouter = require('./routes/promotionRouter');
 
-var app = express();
+const app = express();
+
+const mongodbHost = '127.0.0.1';
+const mongodbPort = '27017';
+const dbName = 'nucampsite';
+
+const url =`mongodb://${mongodbHost}:${mongodbPort}/${dbName}`;
+
+const connect = mongoose.connect(url, {
+  useCreateIndex: true,
+  useFindAndModify: false,
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+.then(() => console.log(`Successfully connected to mongodb db server: ${url}`)
+, err => console.log(err));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
